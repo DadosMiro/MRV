@@ -26,7 +26,7 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     assertNotNullAndType(conn, pyodbc.Connection, "Database connection")
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE nomeOperacao = 'MRV'
+        SELECT 1 FROM Operacao WHERE nomeOperacao = 'MRV'
     """)
     if not cursor.fetchone():
         InsertOperacaoData(conn, dataChunk)
