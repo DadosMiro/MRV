@@ -14,15 +14,14 @@ def insertOperacaoData(conn: pyodbc.Connection):
       - dataInicio: datetime.now()
       - dataFim: NULL
     No futuro podemos fazer como argumentos do arquivo python e passar via CLI.
-    Se isso for feito sera necessario alterar o app atual de insercao de dados.
+    Se isso for feito será necessário alterar o app atual de insercao de dados.
     """
-    # Sql Query Insert
-
+    # Consulta SQL de inserção
     sqlInsert = """
     INSERT INTO Operacao (nomeOperacao, gestorResponsavel, periodoAtualizacao, ativa, dataInicio, dataFim)
     VALUES (?, ?, ?, ?, ?, ?)
     """
-    # Prepare the data for insertion
+    # Prepara os dados para inserção
     data = {
         "nomeOperacao": "MRV",
         "gestorResponsavel": "Joao Paulo",
