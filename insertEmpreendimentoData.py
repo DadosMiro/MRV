@@ -10,7 +10,13 @@ def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         conn: conexao atual com o banco de dados.
         dataChunk: DataFrame oriundo do csv da MRV
     """
+    assertNotNullAndType(conn, pyodbc.Connection, "Conexão com o banco de dados")
+    assertNotNullAndType(dataChunk, pd.DataFrame, "DataFrame com os dados do empreendimento")
     cursor = conn.cursor()
+
+    #separar os empreendimentos únicos
+    empreendimentoSet = set()
+
     for index, row in dataChunk.iterrows():
         nome = str(row['Descrição do Residencial'])
         assertNotNullAndType(nome, str, "nome do empreendimento")
@@ -24,14 +30,34 @@ def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         assertNotNullAndType(cnpjEmpresa, str, "CNPJ da empresa")
         if len(cnpjEmpresa) != 14:
             cnpjEmpresa = None
-        
-        #Every new data send by MRV is considered active
+
+        # Adiciona a combinação única ao conjunto
+        size = len(empreendimentoSet)
+        empreendimentoSet.add((nome, empresa, cnpjEmpresa))
+        size2 = len(empreendimentoSet)
+
+        if size == size2:
+            continue
+
+        # Todo novo empreendimento é considerado ativo
         ativo = True
-        
+
         sqlInsert = """
         INSERT INTO Empreendimento (nome, empresa, cnpjEmpresa, ativo)
         VALUES (?, ?, ?, ?)
         """
-
         cursor.execute(sqlInsert, (nome, empresa, cnpjEmpresa, ativo))
+
+    # Removendo duplicatas ,se quiser colocar ao final de todas as insercoes (main code)
+    sqlDropDuplicates = """
+    WITH CTE AS (
+        SELECT *,
+               ROW_NUMBER() OVER (PARTITION BY nome, empresa, cnpjEmpresa ORDER BY id) AS rn
+        FROM Empreendimento
+    )
+    DELETE FROM CTE WHERE rn > 1
+    """
+    cursor.execute(sqlDropDuplicates)
+
+    # Commit transaction
     conn.commit()
