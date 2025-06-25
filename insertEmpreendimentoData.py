@@ -50,12 +50,15 @@ def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     # Removendo duplicatas ,se quiser colocar ao final de todas as insercoes (main code)
     sqlDropDuplicates = """
-    WITH CTE AS (
-        SELECT *,
-               ROW_NUMBER() OVER (PARTITION BY nome, empresa, cnpjEmpresa ORDER BY id) AS rn
-        FROM Empreendimento
+    DELETE FROM Empreendimento 
+    WHERE id IN (
+        SELECT id FROM (
+            SELECT id,
+                   ROW_NUMBER() OVER (PARTITION BY nome, empresa, cnpjEmpresa ORDER BY id) AS rn
+            FROM Empreendimento
+        ) AS CTE 
+        WHERE rn > 1
     )
-    DELETE FROM CTE WHERE rn > 1
     """
     cursor.execute(sqlDropDuplicates)
 
