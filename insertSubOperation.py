@@ -1,4 +1,4 @@
-from MRVDataFeed import assertNotNullAndType
+from MRVDataFeed import assertType
 from concurrent.futures import ThreadPoolExecutor
 import pyodbc
 import pandas as pd
@@ -23,7 +23,7 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                   cnpj_limpo, nome_empresa)
     """
 
-    assertNotNullAndType(conn, pyodbc.Connection, "Database connection")
+    assertType(conn, pyodbc.Connection, "Database connection")
     cursor = conn.cursor()
     cursor.execute("""
         SELECT 1 FROM Operacao WHERE nomeOperacao = 'MRV'
@@ -33,18 +33,18 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     # Se encontrar a informação, apenas segue o fluxo normalmente
     for index, row in dataChunk.iterrows():
         codigoEmpresa = str(row['Código da Empresa'])
-        assertNotNullAndType(codigoEmpresa, str, "código da empresa")
+        assertType(codigoEmpresa, str, "código da empresa")
         
         nomeEmpresa = str(row['Nome da Empresa'])
-        assertNotNullAndType(nomeEmpresa, str, "nome da empresa")
+        assertType(nomeEmpresa, str, "nome da empresa")
         if len(nomeEmpresa) == 0 or nomeEmpresa == "nan" or pd.isna(nomeEmpresa):
             nomeEmpresa = "[Aviso]Dado Inconsistente"
 
         nomeProduto = str(row['Descrição do Residencial'])
-        assertNotNullAndType(nomeProduto, str, "nome do produto")
+        assertType(nomeProduto, str, "nome do produto")
 
         cnpjEmpresa = str(row['CNPJ da Empresa']).replace('.', '').replace('/', '').replace('-', '')
-        assertNotNullAndType(cnpjEmpresa, str, "CNPJ da empresa")
+        assertType(cnpjEmpresa, str, "CNPJ da empresa")
         if len(cnpjEmpresa) != 14:
             cnpjEmpresa = None
 

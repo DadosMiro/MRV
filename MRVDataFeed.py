@@ -4,17 +4,15 @@ import pandas as pd
 import sys
 import numpy as np
 
-def assertNotNullAndType(obj, expected_type, name):
-    """Verifica se o objeto não é nulo e é do tipo esperado."""
-    if obj is None:
-        raise ValueError(f"[ERROR] {name} cannot be None")
+def assertType(obj, expected_type, name):
+    """Verifica se o objeto é do tipo esperado."""
     if not isinstance(obj, expected_type):
         raise TypeError(f"[ERROR] {name} must be of type {expected_type.__name__}, got {type(obj).__name__}")
 
 def connectToDB(dbName : str, userName: str, password: str):
-    assertNotNullAndType(dbName, str, "dbName")
-    assertNotNullAndType(userName, str, "userName")
-    assertNotNullAndType(password, str, "password")
+    assertType(dbName, str, "dbName")
+    assertType(userName, str, "userName")
+    assertType(password, str, "password")
 
     connection_string = (
         'DRIVER={ODBC Driver 17 for SQL Server};'
@@ -29,8 +27,8 @@ def connectToDB(dbName : str, userName: str, password: str):
 def insertDataTo(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     # This function will be used to insert data into the database
     
-        assertNotNullAndType(conn, pyodbc.Connection, "conn")
-        assertNotNullAndType(dataChunk, pd.DataFrame, "dataChunk")
+        assertType(conn, pyodbc.Connection, "conn")
+        assertType(dataChunk, pd.DataFrame, "dataChunk")
         cursor = conn.cursor()
         
         # Begin transaction for data integrity
@@ -108,7 +106,7 @@ def main():
         raise ValueError("Usage: MRVDataFeed.py [PATH]. (PATH is the path to the CSV file)")
     
     #make sure the path leads to a valid CSV file
-    assertNotNullAndType(sys.argv[1], str, "CSV file path")
+    assertType(sys.argv[1], str, "CSV file path")
     if not sys.argv[1].endswith('.csv'):
         raise ValueError("The provided path must point to a CSV file.")
     

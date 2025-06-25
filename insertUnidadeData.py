@@ -1,4 +1,4 @@
-from MRVDataFeed import assertNotNullAndType
+from MRVDataFeed import assertType
 import pyodbc
 from datetime import datetime
 import pandas as pd
@@ -22,8 +22,8 @@ def insertUnidadeData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 + descricaoCompleta: VARCHAR(500)
 ```
     """
-    assertNotNullAndType(conn, pyodbc.Connection, "Conexão com o banco de dados")
-    assertNotNullAndType(dataChunk, pd.DataFrame, "DataFrame com os dados da unidade")
+    assertType(conn, pyodbc.Connection, "Conexão com o banco de dados")
+    assertType(dataChunk, pd.DataFrame, "DataFrame com os dados da unidade")
 
     cursor = conn.cursor()
 
@@ -50,10 +50,10 @@ def insertUnidadeData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
             codigoEmpreendimento[0] = int(codigoEmpreendimento[0])  # Convert to int
 
             #asserte todos os valores
-            assertNotNullAndType(codigoEmpreendimento[0], int, "código do empreendimento")
-            assertNotNullAndType(bloco, str, "bloco")
-            assertNotNullAndType(unidade, str, "unidade")
-            assertNotNullAndType(descricaoCompleta, str, "descrição completa")
+            assertType(codigoEmpreendimento[0], int, "código do empreendimento")
+            assertType(bloco, str, "bloco")
+            assertType(unidade, str, "unidade")
+            assertType(descricaoCompleta, str, "descrição completa")
 
             size = len(unidadeSet)
             unidadeSet.add((codigoEmpreendimento[0], bloco, unidade, descricaoCompleta))

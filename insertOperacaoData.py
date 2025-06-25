@@ -1,9 +1,9 @@
-from MRVDataFeed import assertNotNullAndType
+from MRVDataFeed import assertType
 import pyodbc
 from datetime import datetime
 
 def insertOperacaoData(conn: pyodbc.Connection):
-    assertNotNullAndType(conn, pyodbc.Connection, "Database connection")
+    assertType(conn, pyodbc.Connection, "Database connection")
     """
     Insere dados na tabela Operacao como fallback de insertSubOperation.
     Valores fixos:
