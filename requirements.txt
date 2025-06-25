@@ -1,0 +1,6 @@
+numpy==2.3.0
+pandas==2.3.0
+pyodbc==5.2.0
+pyparsing==3.2.3
+python-dateutil==2.9.0.post0
+SQLAlchemy==2.0.41
