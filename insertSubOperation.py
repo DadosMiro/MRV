@@ -6,6 +6,7 @@ import sys
 import numpy as np
 import re
 from datetime import datetime
+from MRVDataFeed import InsertOperacaoData
 
 def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
@@ -22,8 +23,14 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                   cnpj_limpo, nome_empresa)
     """
 
-
+    assertNotNullAndType(conn, pyodbc.Connection, "Database connection")
     cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE nomeOperacao = 'MRV'
+    """)
+    if not cursor.fetchone():
+        InsertOperacaoData(conn, dataChunk)
+    # Se encontrar a informação, apenas segue o fluxo normalmente
     for index, row in dataChunk.iterrows():
         codigoEmpresa = str(row['Código da Empresa'])
         assertNotNullAndType(codigoEmpresa, str, "código da empresa")
