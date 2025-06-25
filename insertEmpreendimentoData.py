@@ -17,6 +17,8 @@ def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
         empresa = str(row['Nome da Empresa'])
         assertNotNullAndType(empresa, str, "nome da empresa")
+        if len(empresa) == 0 or empresa == "nan" or pd.isna(empresa):
+            empresa = "[Aviso]Dado Inconsistente"
 
         cnpjEmpresa = str(row['CNPJ da Empresa']).replace('.', '').replace('/', '').replace('-', '')
         assertNotNullAndType(cnpjEmpresa, str, "CNPJ da empresa")
