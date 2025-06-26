@@ -54,7 +54,7 @@ def insertDataTo(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 NEW INSERTION FUNCTIONS FOR NORMALIZED DATABASE TABLES
 Based on CSV-to-Database mapping documentation
 """
-
+#Done
 def insertOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert operation data from CSV Sistema column
@@ -70,7 +70,7 @@ def insertOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - Store operacao ID for foreign key references
     """
     pass
-
+#Done
 def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert sub-operation data linking to operations
@@ -85,7 +85,7 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                   cnpj_limpo, nome_empresa)
     """
     pass
-
+#Done
 def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert development/project data from CSV
@@ -102,7 +102,7 @@ def insertEmpreendimentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                   nome_empresa, cnpj_limpo, 1)
     """
     pass
-
+#Done
 def insertUnidadeData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert property unit data
@@ -116,7 +116,7 @@ def insertUnidadeData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - VALUES (codigo_empreendimento, bloco_limpo, unidade_limpa, NULL, residencial_completo)
     """
     pass
-
+#Done
 def insertClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert customer data from all customer columns in CSV
@@ -164,7 +164,7 @@ def insertInfoJuridicaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - VALUES (cnpj_cliente, NULL, cnpj_raiz, razao_social, NULL, NULL, NULL, NULL)
     """
     pass
-
+#In progress
 def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert address data from customer address fields
@@ -180,7 +180,7 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - Store enderecoId for relationship table
     """
     pass
-
+#In progress
 def insertClienteEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert customer-address relationships
