@@ -48,13 +48,8 @@ def insertSubOperacaoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         if len(cnpjEmpresa) != 14:
             cnpjEmpresa = None
 
-        # Every new data send by MRV is considered active
-        ativo = True
-
-        sqlInsert = """
-        INSERT INTO SubOperacao (codigoEmpresa, nomeEmpresaFilial, nomeProduto, cnpjEmpresa, nomeEmpresa)
-        VALUES (?, ?, ?, ?, ?)
-        """
+            sqlInsert = """INSERT INTO SubOperacao (codigoEmpresa, nomeEmpresaFilial, nomeProduto, cnpjEmpresa, nomeEmpresa)
+            VALUES (?, ?, ?, ?, ?)"""
 
         cursor.execute(sqlInsert, (codigoEmpresa, nomeEmpresa, nomeProduto, cnpjEmpresa, nomeEmpresa))
     conn.commit()
