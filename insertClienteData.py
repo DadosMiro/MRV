@@ -72,5 +72,6 @@ def insertClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         )
         Cliente.add(cpfCnpj)
     conn.commit()
+    cursor.close()
     
 
