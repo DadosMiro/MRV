@@ -11,10 +11,22 @@ def insertTelefoneData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     telefoneSet = set()
 
-    for index, row in dataChunk.iterrows():
+    for row in dataChunk.iterrows():
         cpfCnpj = cleanCpf(str(row['CPF/CNPJ do Cliente']))
 
         #check telefone for main client
+        telefone = cleanTelefoneData(str(row['Telefone Fixo']))
+        if telefone:
+            telefoneSet.add((cpfCnpj, telefone, 'FIXO'))
+        telefone = cleanTelefoneData(str(row['Telefone Celular']))
+        if telefone:
+            telefoneSet.add((cpfCnpj, telefone, 'CELULAR'))
+        
+        telefone = cleanTelefoneData(str(row['Telefone Fax']))
+        if telefone:
+            telefoneSet.add((cpfCnpj, telefone, 'FAX'))
+
+
         for i in range(1, 11):
             telefone = cleanTelefoneData(str(row[f'Telefone {i}']))
             if telefone:
@@ -106,10 +118,3 @@ def cleanCpf(cpf: str):
     return ''.join(filter(str.isdigit, cpf))
 
 
-
-if __name__ == "__main__":
-    # Example usage
-    
-    csvData = pd.read_csv('BaseTeste.csv', encoding='utf-8', sep=';')
-
-    insertTelefoneData(None, csvData)
