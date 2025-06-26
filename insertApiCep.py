@@ -1,3 +1,4 @@
+import time
 import requests
 import pandas as pd
 
@@ -10,3 +11,5 @@ def consultaCep(cep):
         if "erro" in dados:
             return "CEP não encontrado."
         return dados
+    else:
+        return f"Erro na consulta: {response.status_code}"
