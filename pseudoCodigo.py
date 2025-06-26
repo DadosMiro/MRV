@@ -164,7 +164,7 @@ def insertInfoJuridicaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - VALUES (cnpj_cliente, NULL, cnpj_raiz, razao_social, NULL, NULL, NULL, NULL)
     """
     pass
-#In progress
+#In progress cliente endereco 
 def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert address data from customer address fields
@@ -180,21 +180,8 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - Store enderecoId for relationship table
     """
     pass
-#In progress
-def insertClienteEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
-    """
-    Insert customer-address relationships
-    
-    PSEUDOCODE:
-    - For each customer-address combination:
-        - Get cpfCnpjCliente from Cliente table
-        - Get enderecoId from Endereco table
-        - INSERT INTO ClienteEndereco (cpfCnpjCliente, enderecoId, principal, ativo, dataVinculacao)
-        - VALUES (cpf_cnpj_cliente, endereco_id, 1, 1, GETDATE())
-        - Set principal = 1 for first address, 0 for additional addresses
-    """
-    pass
 
+#Done
 def insertTelefoneData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert phone number data from multiple phone columns
@@ -255,7 +242,7 @@ def insertContratoClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
             - VALUES (numero_contrato, cpf_cnpj_cliente, tipo_vinculo, 1)
     """
     pass
-
+#done
 def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     Insert installment data from CSV parcela fields
@@ -277,35 +264,8 @@ def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     """
     pass
 
-def insertPagamentoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
-    """
-    Insert payment data from CSV payment fields
-    
-    PSEUDOCODE:
-    - For each payment record:
-        - Get parcelaId from inserted Parcela records
-        - Parse VALOR DO ÚLTIMO BOLETO (remove currency formatting)
-        - Parse DATA DE PAGAMENTO - ÚLTIMO BOLETO (convert date format)
-        - INSERT INTO Pagamento (parcelaId, valorPago, dataPagamento, formaPagamento, numeroDocumento)
-        - VALUES (parcela_id, valor_pago_limpo, data_pagamento_parsed, 'BOLETO', NULL)
-        - Only insert if payment data exists (not NULL/empty)
-    """
-    pass
 
-def insertHistoricoCobrancaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
-    """
-    Insert collection history data
-    
-    PSEUDOCODE:
-    - For each contract with collection history:
-        - Parse Ocorrências field to extract action dates and descriptions
-        - Map GRUPO DE COBRANÇA to tipoAcao
-        - Extract dates from Ocorrências text using regex
-        - Get STATUS DO ÚLTIMO BOLETO for statusResultado
-        - INSERT INTO HistoricoCobranca (numeroContrato, dataAcao, tipoAcao, descricaoAcao, statusResultado)
-        - VALUES (numero_contrato, data_acao_parsed, grupo_cobranca, descricao_ocorrencia, status_boleto)
-    """
-    pass
+
 
 def processNormalizedInsertions(conn: pyodbc.Connection, mrvData: pd.DataFrame):
     """

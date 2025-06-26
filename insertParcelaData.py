@@ -49,18 +49,32 @@ def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                 daysOverdue = (datetime.now().date() - dueDate).days
             
 
-            #bool for when the diasAtraso is > 0 beacause its overdue, so the client must be charged(thiefs)
-            active = daysOverdue > 0
+            
             lastUpdatedDate = datetime.now().date()
-            #print out the data being inserted for debugging
+
+
             parcelDescription = row['Descrição da Parcela'] if pd.notna(row['Descrição da Parcela']) else ''
             parcelIdentifier = row['Identificador da Parcela'] if pd.notna(row['Identificador da Parcela']) else ''
-  
+
+            #Data relative to the payment of the parcela will be inserted in the table (was not previously), value of last boleto, last boleto creation(date), status of the last boleto
+            #We want the fields 'VALOR DO ÚLTIMO BOLETO', 'ÚLTIMO BOLETO CRIADO', 'STATUS DO ÚLTIMO BOLETO' to be inserted in the table
+            lastBoletoValue = convertCurrencyToFloat(row['VALOR DO ÚLTIMO BOLETO'])
+            lastBoletoDate = (
+                datetime.strptime(row['ÚLTIMO BOLETO CRIADO'], '%Y-%m-%d')
+                        .date()
+                if pd.notna(row['ÚLTIMO BOLETO CRIADO']) 
+                else None
+            )
+            lastBoletoStatus = row['STATUS DO ÚLTIMO BOLETO'] if pd.notna(row['STATUS DO ÚLTIMO BOLETO']) else ''
+            
+            #bool for when the diasAtraso is > 0 beacause its overdue, so the client must be charged(thiefs)
+            active = daysOverdue > 0 and lastBoletoStatus.lower() != 'pago'
+
             sqlQuery = """ INSERT INTO Parcela (
                 numeroContrato, codigoParcela, tipoEspecifico, tipoParcela, descricaoParcela,
                 valorOriginal, valorAtualizado, valorPendente, dataVencimento,
-                dataAtualizacao, statusParcela, diasAtraso, ativa
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ;"""
+                dataAtualizacao, statusParcela, diasAtraso, ativa, dataCriacaoUltimoBoleto, valorUltimoBoleto, statusUltimoBoleto)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ;"""
             
             #execute
             cursor.execute(sqlQuery, (
@@ -76,7 +90,10 @@ def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
                 lastUpdatedDate,
                 parcelStatus,
                 daysOverdue,
-                active
+                active,
+                lastBoletoDate,
+                lastBoletoValue,
+                lastBoletoStatus
             ))
     #commit after all data of this chunk is inserted
     conn.commit()
