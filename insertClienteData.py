@@ -70,4 +70,7 @@ def insertClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
             """,
             (datetime.now(), cpfCnpj)
         )
+        Cliente.add(cpfCnpj)
+    conn.commit()
+    
 
