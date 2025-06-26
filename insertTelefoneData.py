@@ -2,6 +2,7 @@ from MRVDataFeed import assertType
 import pyodbc
 from datetime import datetime
 import pandas as pd
+from helper import cleanCpf, cleanTelefoneData
 def insertTelefoneData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     assertType(conn, pyodbc.Connection, "Database connection") 
@@ -11,7 +12,7 @@ def insertTelefoneData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     telefoneSet = set()
 
-    for row in dataChunk.iterrows():
+    for _, row in dataChunk.iterrows():
         cpfCnpj = cleanCpf(str(row['CPF/CNPJ do Cliente']))
 
         #check telefone for main client
@@ -103,18 +104,5 @@ def processTelefoneSecundaryClient(row: pd.Series, cpfRowIndex: str, suffixTel: 
     
     return results
     
-def cleanTelefoneData(tel: str):
-    """
-    Clean phone number by removing special characters and returning only digits.
-    """
-    return ''.join(filter(str.isdigit, tel))
-
-
-
-def cleanCpf(cpf: str):
-    """
-    Clean CPF/CNPJ by removing special characters and returning only digits.
-    """
-    return ''.join(filter(str.isdigit, cpf))
 
 
