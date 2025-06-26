@@ -20,6 +20,7 @@ def insertClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         - VALUES ( nome_cliente, 1, GETDATE(), tipo_cliente)
     """
     assertType(conn, pyodbc.Connection, "Database connection")
+    assertType(dataChunk, pd.DataFrame, "Data chunk")
 
     cursor = conn.cursor()
 
