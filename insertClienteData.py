@@ -43,34 +43,35 @@ def insertClienteData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         ativo = 1
         cursor.execute("SELECT ativo FROM Cliente WHERE cpfCnpj = ?", (cpfCnpj,))
         result = cursor.fetchone()
-    if result is None:
-        # inserir novo cliente
-        cursor.execute(
-            "INSERT INTO Cliente(cpfCnpj, nome, ativo, dataInclusao, tipoCliente) VALUES (?, ?, ?, ?, ?)",
-            (cpfCnpj, nome, ativo, dataInclusao, tipoCliente)
-        )
-    elif result[0] == 0:
-        # reativar
-        cursor.execute(
-            """
-            UPDATE Cliente
-            SET ativo = 1,
-                dataInativacao = NULL,
-                dataReativacao = ? 
-            WHERE cpfCnpj = ?
-            """,
-            (datetime.now(), cpfCnpj)
-        )
-    else:
-        cursor.execute(
-            """
-            UPDATE Cliente
-            SET dataRenovacao = ?
-            WHERE cpfCnpj = ?
-            """,
-            (datetime.now(), cpfCnpj)
-        )
-        Cliente.add(cpfCnpj)
+        if result is None:
+            # inserir novo cliente
+            cursor.execute(
+                "INSERT INTO Cliente(cpfCnpj, nome, ativo, dataInclusao, tipoCliente) VALUES (?, ?, ?, ?, ?)",
+                (cpfCnpj, nome, ativo, dataInclusao, tipoCliente)
+            )
+        elif result[0] == 0:
+            # reativar
+            cursor.execute(
+                """
+                UPDATE Cliente
+                SET ativo = 1,
+                    dataInativacao = NULL,
+                    dataReativacao = ? 
+                WHERE cpfCnpj = ?
+                """,
+                (datetime.now(), cpfCnpj)
+            )
+        else:
+            cursor.execute(
+                """
+                UPDATE Cliente
+                SET dataRenovacao = ?
+                WHERE cpfCnpj = ?
+                """,
+                (datetime.now(), cpfCnpj)
+            )
+            Cliente.add(cpfCnpj)
+
     conn.commit()
     cursor.close()
     
