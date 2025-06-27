@@ -25,6 +25,6 @@ def consultaCepComCache(cep):
     else:
         ceps_cache[cep] = f"Erro na consulta: {response.status_code}"
 
-    time.sleep(0.3)
+    time.sleep(0.3) # Aguardar 300ms para evitar sobrecarga na API
     
     return ceps_cache[cep]
