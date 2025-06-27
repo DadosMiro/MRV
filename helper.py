@@ -2,7 +2,7 @@ def cleanTelefoneData(tel: str):
     """
     Clean phone number by removing special characters and returning only digits.
     """
-    return ''.join(filter(str.isdigit, tel))
+    return ''.join(filter(str.isdigit, tel)) if ''.join(filter(str.isdigit, tel)) != '' else None 
 
 
 
