@@ -12,36 +12,31 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     cursor = conn.cursor()
     
     for index, row in dataChunk.iterrows():
-        cep = str(row['CEP do Cliente']).replace('.', '').replace('-', '').strip()
-        assertType(cep, str, "CEP do Cliente")
+        cep = str(row.get('CEP do Cliente', '')).replace('.', '').replace('-', '').strip()
         if len(cep) != 8 or not cep.isdigit():
             cep = "N/A"
 
-        logradouro = str(row['Endereço do Cliente']).strip()
-        assertType(logradouro, str, "Endereço do Cliente")
+        logradouro = str(row.get('Endereço do Cliente', '')).strip()
+        bairro = str(row.get('Bairro do Cliente', '')).strip()
 
         endereco_via_cep = None
         if not logradouro or logradouro.lower() == "nan" or pd.isna(logradouro):
             endereco_via_cep = consultaCep(cep)
-            if endereco_via_cep and isinstance(endereco_via_cep, dict):
-                logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()
-
-        bairro = str(row['Bairro do Cliente']).strip().title()
-        assertType(bairro, str, "Bairro do Cliente")
-
+            if endereco_via_cep:
+                logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()      
         if not bairro or bairro.lower() == "nan" or pd.isna(bairro):
             if not endereco_via_cep:
                 endereco_via_cep = consultaCep(cep)
-            bairro = endereco_via_cep.get("bairro", "N/A").strip().title() if endereco_via_cep else "N/A"
+            if endereco_via_cep:
+                bairro = endereco_via_cep.get("bairro", "N/A").strip().title()
+            else:
+                bairro = "N/A"
 
         insert_sql = """
             INSERT INTO EnderecoCliente (cep, logradouro, bairro)
             VALUES (?, ?, ?)
         """
-        try:
-            cursor.execute(insert_sql, cep, logradouro, bairro)
-        except Exception as e:
-            print(f"Erro ao inserir linha {index}: {e}")
+        cursor.execute(insert_sql, cep, logradouro, bairro)
 
     conn.commit()
     cursor.close()
