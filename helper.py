@@ -10,7 +10,14 @@ def cleanCpf(cpf: str):
     """
     Clean CPF/CNPJ by removing special characters and returning only digits.
     """
-    return ''.join(filter(str.isdigit, cpf))
+    cpfN = ''.join(filter(str.isdigit, cpf))
+    if len(cpfN) > 11:
+        return None
+    if len(cpfN) < 11 and len(cpfN) >= 3:
+        #fill with zero on the left, bc stupid people use cpf as number
+        cpfN = cpfN.zfill(11)
+    
+    return cpfN
 
 def cleanEmail(email: str):
     """
