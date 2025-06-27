@@ -1,3 +1,5 @@
+import pandas as pd
+
 def cleanTelefoneData(tel: str):
     """
     Clean phone number by removing special characters and returning only digits.
@@ -19,6 +21,13 @@ def cleanCpf(cpf: str):
     
     return cpfN
 
+def getDigits(s: str):
+    """
+    Extract digits from a string.
+    Returns a string of digits or None if no digits are found.
+    """
+    digits = ''.join(filter(str.isdigit, s))
+    return digits #for when digits are not found, it will return an empty string(if it needs just change it to return None)
 def cleanEmail(email: str):
     """
     Clean email by checking format and removing leading/trailing spaces.
@@ -42,4 +51,14 @@ def cleanCep(cep: str):
         #fill with zero on the left, bc stupid people use cpf as number
         cepN = cepN.zfill(8)
     return cepN
-    
+
+def convertCurrencyToFloat(value):
+    # treat missing or 'NÃO INFORMADO' as zero
+    if pd.isna(value) or value == '' or value == 'NÃO INFORMADO':
+        return 0.0
+    # strip 'R$', spaces and switch comma to dot
+    cleanedCurrencyValue = str(value).replace('R$', '').replace(',', '.').replace(' ', '')
+    if cleanedCurrencyValue.count('.') > 1:
+        # only the last dot is the decimal separator
+        cleanedCurrencyValue = f"{cleanedCurrencyValue.rsplit('.',1)[0].replace('.', '')}.{cleanedCurrencyValue.rsplit('.',1)[1]}" 
+    return float(cleanedCurrencyValue)

@@ -2,6 +2,7 @@ from MRVDataFeed import assertType
 import pyodbc
 from datetime import datetime
 import pandas as pd
+from helper import convertCurrencyToFloat
 def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     assertType(conn, pyodbc.Connection, "Database connection")
@@ -99,13 +100,3 @@ def insertParcelaData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     conn.commit()
     cursor.close()
 
-def convertCurrencyToFloat(value):
-    # treat missing or 'NÃO INFORMADO' as zero
-    if pd.isna(value) or value == '' or value == 'NÃO INFORMADO':
-        return 0.0
-    # strip 'R$', spaces and switch comma to dot
-    cleanedCurrencyValue = str(value).replace('R$', '').replace(',', '.').replace(' ', '')
-    if cleanedCurrencyValue.count('.') > 1:
-        # only the last dot is the decimal separator
-        cleanedCurrencyValue = f"{cleanedCurrencyValue.rsplit('.',1)[0].replace('.', '')}.{cleanedCurrencyValue.rsplit('.',1)[1]}" 
-    return float(cleanedCurrencyValue)
