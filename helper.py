@@ -68,7 +68,7 @@ def convertCurrencyToFloat(value):
 def consultaCepApi(cep):
     time.sleep(0.3)
     url = f"https://viacep.com.br/ws/{cep}/json/"
-    response = requests.ger(url) 
+    response = requests.get(url) 
 
     if response.status_code == 200:
         dados = response.json()
@@ -77,6 +77,5 @@ def consultaCepApi(cep):
         return dados
     else: 
         return f"Erro na consulta" 
-time.sleep(0.3)
     
 
