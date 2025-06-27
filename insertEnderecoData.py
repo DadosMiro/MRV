@@ -4,42 +4,80 @@ from datetime import datetime
 import pandas as pd
 from insertApiCep import consultaCep
 
-"""
-    Insert address data from customer address fields
-    
-    PSEUDOCODE:
-    - For each unique address combination:
-        - Parse Endereço do Cliente to extract: logradouro, numero, complemento
-        - Use regex to split full address into components
-        - Clean CEP do Cliente (remove special chars, ensure 8 digits)
-        - INSERT INTO Endereco (logradouro, numero, complemento, bairro, cidade, uf, cep, tipoEndereco)
-        - VALUES (logradouro_parsed, numero_parsed, complemento_parsed, bairro_cliente, 
-                  cidade_cliente, estado_cliente, cep_limpo, 'RESIDENCIAL')
-        - Store enderecoId for relationship table
-    """
+
 def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     assertType(conn, pyodbc.Connection, "Database connection")
     assertType(dataChunk, pd.DataFrame, "Data chunk")
 
     cursor = conn.cursor()
- 
-    Endereco = set()
-        
+    
     for index, row in dataChunk.iterrows():
         cep = str(row['CEP do Cliente']).replace('.', '').replace('-', '').strip()
         assertType(cep, str, "CEP do Cliente")
         if len(cep) != 8 or not cep.isdigit():
             cep = "N/A"
+
         logradouro = str(row['Endereço do Cliente']).strip()
         assertType(logradouro, str, "Endereço do Cliente")
-        if not logradouro or logradouro == "nan" or pd.isna(logradouro):
+
+        endereco_via_cep = None
+        if not logradouro or logradouro.lower() == "nan" or pd.isna(logradouro):
             endereco_via_cep = consultaCep(cep)
             if endereco_via_cep and isinstance(endereco_via_cep, dict):
-                 logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()
-        else:
-            logradouro = "N/A"
-        bairro = str(row['Bairro do Cliente']).strip()
+                logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()
+
+        bairro = str(row['Bairro do Cliente']).strip().title()
         assertType(bairro, str, "Bairro do Cliente")
-        if not bairro or bairro == "nan" or pd.isna(bairro):
-            bairro_via_cep = bairro_via_cep.get("bairro", "N/A").strip().title() if endereco_via_cep else "N/A"
+
+        if not bairro or bairro.lower() == "nan" or pd.isna(bairro):
+            if not endereco_via_cep:
+                endereco_via_cep = consultaCep(cep)
+            bairro = endereco_via_cep.get("bairro", "N/A").strip().title() if endereco_via_cep else "N/A"
+
+        insert_sql = """
+            INSERT INTO EnderecoCliente (cep, logradouro, bairro)
+            VALUES (?, ?, ?)
+        """
+        try:
+            cursor.execute(insert_sql, cep, logradouro, bairro)
+        except Exception as e:
+            print(f"Erro ao inserir linha {index}: {e}")
+
+    conn.commit()
+    cursor.close()
+
+    """
+    Insert address data from customer address fields
     
+    PSEUDOCODE:
+    Função insertEnderecoData(conexao, dados_em_tabela):
+    Validar se conexao é do tipo correto
+    Validar se dados_em_tabela é um DataFrame
+
+    Criar cursor para executar comandos SQL
+
+    Para cada linha em dados_em_tabela:
+        Extrair o CEP do cliente e remover pontos, traços e espaços
+        Verificar se o CEP tem 8 dígitos numéricos
+            Se não tiver, marcar como "N/A"
+
+        Extrair o logradouro (endereço) da linha e remover espaços
+        Se o logradouro estiver vazio ou inválido:
+            Consultar API de CEP
+            Se a resposta for válida:
+                Obter o logradouro da API
+
+        Extrair o bairro da linha e formatar
+        Se o bairro estiver vazio ou inválido:
+            Se ainda não consultou o CEP, consultar agora
+            Se a resposta for válida:
+                Obter o bairro da API
+
+        Preparar o comando SQL para inserir os dados na tabela EnderecoCliente
+        Tentar executar a inserção com os valores: CEP, logradouro e bairro
+        Se houver erro, imprimir o erro e continuar
+
+    Confirmar todas as inserções no banco (commit)
+    Exibir mensagem de sucesso
+
+    """
