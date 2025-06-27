@@ -2,7 +2,7 @@ from MRVDataFeed import assertType
 import pyodbc
 from datetime import datetime
 import pandas as pd
-from insertApiCep import consultaCep
+from helper import consultaCepApi
 from helper import cleanCep
 
 
@@ -14,21 +14,28 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     #fazer a consulta por ceps unicos no banco, usar dados comuns de cep como cache
     #o(1)
 
+
+
+
     for index, row in dataChunk.iterrows():
-        cep = str(row.get('CEP do Cliente', '')).
+        cep = str(row['CEP do Cliente']) 
+        cep = cleanCep(cep)
         if len(cep) != 8 or not cep.isdigit():
+                cep = "N/A"
+                dataChunk.at[index, 'cep'] = cep
 
         logradouro = str(row.get('Endereço do Cliente', '')).strip()
         bairro = str(row.get('Bairro do Cliente', '')).strip()
 
         endereco_via_cep = None
         if not logradouro or logradouro.lower() == "nan" or pd.isna(logradouro):
-            endereco_via_cep = consultaCep(cep)
-            if endereco_via_cep:
-                logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()      
+            endereco_via_cep = consultaCepApi(cep)
+            if endereco_via_cep and isinstance(endereco_via_cep, dict) and "erro" not in endereco_via_cep:
+                logradouro = endereco_via_cep.get("logradouro", "N/A").strip().title()
+                
         if not bairro or bairro.lower() == "nan" or pd.isna(bairro):
             if not endereco_via_cep:
-                endereco_via_cep = consultaCep(cep)
+                endereco_via_cep = consultaCepComCache(cep)
             if endereco_via_cep:
                 bairro = endereco_via_cep.get("bairro", "N/A").strip().title()
             else:
@@ -76,5 +83,4 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
 
     Confirmar todas as inserções no banco (commit)
     Exibir mensagem de sucesso
-
-    """
+"""
