@@ -77,7 +77,7 @@ def insertClient(cpfF: str, nomeF: str, row: pd.Series, cursor: pyodbc.Cursor, i
         SET ativo = ?, numeroIncidencia = ?, dataRenovacao = ?, ehPrincipal = ?
         WHERE cpfCnpj = ?
         """
-        print(f"Atualizando cliente: {nome} com CPF/CNPJ: {cpfCnpj}, ehPrincipal: {isMain}")
+    
         cursor.execute(sqlUpdate, (ativo, numeroIncidencia, dataRenovacao, isMain, cpfCnpj))
     else:
         # Insert new client
@@ -87,6 +87,21 @@ def insertClient(cpfF: str, nomeF: str, row: pd.Series, cursor: pyodbc.Cursor, i
         INSERT INTO Cliente (cpfCnpj, nome, ativo, dataInclusao, dataRenovacao, tipoCliente)
         VALUES (?, ?, ?, ?, ?, ?)
         """
-        print(f"Inserindo cliente: {nome} com CPF/CNPJ: {cpfCnpj}, ehPrincipal: {isMain}")
+    
         cursor.execute(sqlInsert, (cpfCnpj, nome, isMain, dataInclusao, dataRenovacao, tipoCliente))
+
+        # Now Create the InfoFisica and InfoJuridica Table for this client, both will start empty  
+        if tipoCliente == 0:
+            # Insert into InfoFisica for individual clients
+            sqlInsertInfoFisica = """
+            INSERT INTO InfoFisica (cpfCnpj) VALUES (?)
+            """
+            cursor.execute(sqlInsertInfoFisica, (cpfCnpj,))
+        else:
+            # Insert into InfoJuridica for enterprise clients
+            sqlInsertInfoJuridica = """
+            INSERT INTO InfoJuridica (cpfCnpj) VALUES (?)
+            """
+            cursor.execute(sqlInsertInfoJuridica, (cpfCnpj,))
+
 
