@@ -47,7 +47,7 @@ def cleanCep(cep: str):
     cepN = ''.join(filter(str.isdigit, str(cep)))
     if len(cepN) > 8:
         return None
-    if len(cepN) < 8 and len(cepN) >= 3:
+    if len(cepN) < 8 and len(cepN) >= 6:
         #fill with zero on the left, bc stupid people use cpf as number
         cepN = cepN.zfill(8)
     return cepN
