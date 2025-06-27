@@ -35,9 +35,11 @@ def cleanCep(cep: str):
     """
     Clean Cep by removing special characters and returning only digits.
     """
-    cepN = ''.join(filter(str.isdigit, cep))
-    if len(cpfN) > 8:
+    cepN = ''.join(filter(str.isdigit, str(cep)))
+    if len(cepN) > 8:
         return None
     if len(cepN) < 8 and len(cepN) >= 3:
         #fill with zero on the left, bc stupid people use cpf as number
-        cpfN = cpfN.zfill(11)
+        cepN = cepN.zfill(8)
+    return cepN
+    
