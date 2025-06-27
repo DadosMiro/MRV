@@ -48,7 +48,7 @@ def insertClient(cpfF: str, nomeF: str, row: pd.Series, cursor: pyodbc.Cursor, i
     assertType(isMain, bool, "Main client flag")
 
     # Extract and clean client data
-    cpfCnpj = cleanCpf(row[cpfF])
+    cpfCnpj = row[cpfF]
     nome = str(row[nomeF]).strip()
     
     # Validate CPF/CNPJ for non-main clients (optional) and main clients (required)
