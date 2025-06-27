@@ -77,5 +77,5 @@ def consultaCepApi(cep):
         return dados
     else: 
         return f"Erro na consulta" 
-    
+ 
 
