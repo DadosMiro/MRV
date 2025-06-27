@@ -1,4 +1,6 @@
 import pandas as pd
+import requests
+import time
 
 def cleanTelefoneData(tel: str):
     """
@@ -61,3 +63,20 @@ def convertCurrencyToFloat(value):
         # only the last dot is the decimal separator
         cleanedCurrencyValue = f"{cleanedCurrencyValue.rsplit('.',1)[0].replace('.', '')}.{cleanedCurrencyValue.rsplit('.',1)[1]}" 
     return float(cleanedCurrencyValue)
+
+
+def consultaCepApi(cep):
+    time.sleep(0.3)
+    url = f"https://viacep.com.br/ws/{cep}/json/"
+    response = requests.ger(url) 
+
+    if response.status_code == 200:
+        dados = response.json()
+        if "erro" in dados:
+            return "CEP não encontrado."   
+        return dados
+    else: 
+        return f"Erro na consulta" 
+time.sleep(0.3)
+    
+
