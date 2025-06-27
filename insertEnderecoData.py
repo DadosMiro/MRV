@@ -10,7 +10,8 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     assertType(dataChunk, pd.DataFrame, "Data chunk")
 
     cursor = conn.cursor()
-    
+    #fazer a consulta por ceps unicos no banco, usar dados comuns de cep como cache
+    #o(1)
     for index, row in dataChunk.iterrows():
         cep = str(row.get('CEP do Cliente', '')).replace('.', '').replace('-', '').strip()
         if len(cep) != 8 or not cep.isdigit():
