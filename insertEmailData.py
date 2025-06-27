@@ -35,7 +35,7 @@ def insertEmailData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         if result:
             emailSet.update(result)
         
-        result = processEmailSecundaryClient(row, 'CPF Quinto Cliente', 'Quinto Cliente')
+        result = processEmailSecundaryClient(row, 'CPF Quinto Cliente', 'Quinta Cliente')
         if result:
             emailSet.update(result)
         

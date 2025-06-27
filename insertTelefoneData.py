@@ -47,7 +47,7 @@ def insertTelefoneData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
         if result:
             telefoneSet.update(result)
         
-        result = processTelefoneSecundaryClient(row, 'CPF Quinto Cliente', 'Quinto Cliente')
+        result = processTelefoneSecundaryClient(row, 'CPF Quinto Cliente', 'Quinta Cliente')
         if result:
             telefoneSet.update(result)
         
