@@ -3,6 +3,7 @@ import pyodbc
 from datetime import datetime
 import pandas as pd
 from insertApiCep import consultaCep
+from helper import cleanCep
 
 
 def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
@@ -12,10 +13,10 @@ def insertEnderecoData(conn: pyodbc.Connection, dataChunk: pd.DataFrame):
     cursor = conn.cursor()
     #fazer a consulta por ceps unicos no banco, usar dados comuns de cep como cache
     #o(1)
+
     for index, row in dataChunk.iterrows():
-        cep = str(row.get('CEP do Cliente', '')).replace('.', '').replace('-', '').strip()
+        cep = str(row.get('CEP do Cliente', '')).
         if len(cep) != 8 or not cep.isdigit():
-            cep = "N/A"
 
         logradouro = str(row.get('Endereço do Cliente', '')).strip()
         bairro = str(row.get('Bairro do Cliente', '')).strip()
